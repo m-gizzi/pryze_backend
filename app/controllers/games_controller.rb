@@ -1,4 +1,4 @@
-class PaymentsController < ApplicationController
+class GamesController < ApplicationController
 
     def create
         payload = {
@@ -14,7 +14,19 @@ class PaymentsController < ApplicationController
         }
         url = "https://connect.squareupsandbox.com/v2/payments"
         res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
-        render json: res.body.first
-    end
+        result = res.parse
+        
+        if result["payment"]
+            if params[:user]
+                user = params[:user][:id]
+            else
+                user = User.first.id
+            end
+            game_attributes = {amount: (params[:amount].to_f / 100), user_id: user, square_payment_id: result["payment"]["id"]}
+            game = Game.create(game_attributes)
+            game.generate_donations
+        end
 
+        render json: result
+    end
 end
