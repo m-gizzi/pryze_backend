@@ -3,6 +3,23 @@ class Game < ApplicationRecord
   has_many :donations
   has_many :fundraisers, through: :donations
 
+  def self.create_square_payment(params)
+    payload = {
+      "source_id": params[:nonce],
+      "verification_token": params[:token],
+      "autocomplete": true,
+      "location_id": PryzeBackend::Application.credentials.square_location_id,
+      "amount_money": {
+        "amount": params[:amount],
+        "currency": "USD"
+      },
+      "idempotency_key": SecureRandom.uuid
+    }
+    url = "https://connect.squareupsandbox.com/v2/payments"
+    res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
+    res.parse
+  end
+
   def generate_donations
     donations_array = []
     total_fundraisers = Fundraiser.all.length
