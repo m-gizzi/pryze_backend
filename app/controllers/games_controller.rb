@@ -1,15 +1,21 @@
 class GamesController < ApplicationController
 
     def create
-        result = Game.create_square_payment(params)
+        if params[:user]
+            user = params[:user]
+        else
+            user = User.first
+        end
+
+        if params[:postal_code] != ''
+            result = Game.save_card_and_pay(params, user)
+        else
+            result = Game.create_square_payment(params, user)
+        end
         
         if result["payment"]
-            if params[:user]
-                user = params[:user][:id]
-            else
-                user = User.first.id
-            end
-            game_attributes = {amount: (params[:amount].to_f / 100), user_id: user, square_payment_id: result["payment"]["id"]}
+
+            game_attributes = {amount: (params[:amount].to_f / 100), user_id: user[:id], square_payment_id: result["payment"]["id"]}
             game = Game.create(game_attributes)
             game.generate_donations
 

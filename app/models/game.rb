@@ -3,14 +3,15 @@ class Game < ApplicationRecord
   has_many :donations
   has_many :fundraisers, through: :donations
 
-  def self.create_square_payment(params)
+  def self.create_square_payment(payment_info, user)
     payload = {
-      "source_id": params[:nonce],
-      "verification_token": params[:token],
+      "source_id": payment_info[:nonce],
+      # "verification_token": payment_info[:token],
+      "customer_id": user[:square_id],
       "autocomplete": true,
       "location_id": PryzeBackend::Application.credentials.square_location_id,
       "amount_money": {
-        "amount": params[:amount],
+        "amount": payment_info[:amount],
         "currency": "USD"
       },
       "idempotency_key": SecureRandom.uuid
@@ -18,6 +19,25 @@ class Game < ApplicationRecord
     url = "https://connect.squareupsandbox.com/v2/payments"
     res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
     res.parse
+  end
+
+  def self.save_card_and_pay(params, user)
+    payload = {
+      "card_nonce": params[:nonce],
+      "billing_address": {
+        "postal_code": params[:postal_code]
+      }
+    }
+    url = "https://connect.squareupsandbox.com/v2/customers/#{user[:square_id]}/cards"
+    res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
+
+    payment_info = {
+      nonce: res.parse["card"]["id"],
+      token: params[:token],
+      amount: params[:amount]
+    }
+
+    self.create_square_payment(payment_info, user)
   end
 
   def generate_donations
@@ -58,7 +78,11 @@ class Game < ApplicationRecord
 
     end
 
-    donations_array.each do |donation_hash|
+    final_check = donations_array.filter do |donation_hash|
+      donation_hash[:amount] != 0
+    end
+    
+    final_check.each do |donation_hash|
       Donation.create(donation_hash)
     end
 
