@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+    has_many :creditCards
     has_many :games
     has_many :donations, through: :games
     has_secure_password

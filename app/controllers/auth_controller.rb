@@ -4,7 +4,7 @@ class AuthController < ApplicationController
     decoded_token = decode_token(params[:auth][:token])
     user_id = decoded_token["user_id"]
     user = User.find_by(id: user_id)
-    render json: user
+    render json: {user: UserSerializer.new(user)}
   end
 
   def login

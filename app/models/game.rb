@@ -6,7 +6,6 @@ class Game < ApplicationRecord
   def self.create_square_payment(payment_info, user)
     payload = {
       "source_id": payment_info[:nonce],
-      # "verification_token": payment_info[:token],
       "customer_id": user[:square_id],
       "autocomplete": true,
       "location_id": PryzeBackend::Application.credentials.square_location_id,
@@ -16,6 +15,12 @@ class Game < ApplicationRecord
       },
       "idempotency_key": SecureRandom.uuid
     }
+    
+    if !payload[:source_id]
+      credit_card = CreditCard.find_by(id: payment_info["ccof"])
+      payload[:source_id] = credit_card.square_ccof_id
+    end
+
     url = "https://connect.squareupsandbox.com/v2/payments"
     res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
     res.parse
@@ -30,6 +35,8 @@ class Game < ApplicationRecord
     }
     url = "https://connect.squareupsandbox.com/v2/customers/#{user[:square_id]}/cards"
     res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
+
+    CreditCard.create(last_four: res.parse["card"]["last_4"], square_ccof_id: res.parse["card"]["id"], card_brand: res.parse["card"]["card_brand"], user_id: user["id"])
 
     payment_info = {
       nonce: res.parse["card"]["id"],

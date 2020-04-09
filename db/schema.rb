@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_06_184633) do
+ActiveRecord::Schema.define(version: 2020_04_09_151511) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "credit_cards", force: :cascade do |t|
+    t.string "last_four"
+    t.string "square_ccof_id"
+    t.string "card_brand"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_credit_cards_on_user_id"
+  end
 
   create_table "donations", force: :cascade do |t|
     t.float "amount"
@@ -52,6 +62,7 @@ ActiveRecord::Schema.define(version: 2020_04_06_184633) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "credit_cards", "users"
   add_foreign_key "donations", "fundraisers"
   add_foreign_key "donations", "games"
   add_foreign_key "games", "users"

@@ -7,7 +7,7 @@ class GamesController < ApplicationController
             user = User.first
         end
 
-        if params[:postal_code] != ''
+        if params[:postal_code] != '' && params[:nonce]
             result = Game.save_card_and_pay(params, user)
         else
             result = Game.create_square_payment(params, user)
