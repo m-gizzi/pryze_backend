@@ -4,6 +4,8 @@ class CreateFundraisers < ActiveRecord::Migration[6.0]
       t.string :name
       t.string :url
       t.string :address
+      t.float :latitude
+      t.float :longitude
 
       t.timestamps
     end
