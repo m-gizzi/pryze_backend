@@ -24,7 +24,7 @@ fundraisers = [
     {name: "Lost Larson", url: "https://www.gofundme.com/f/lost-larson-employee-relief", address: "5318 N Clark St, Chicago, IL 60640", latitude: 41.9786254, longitude: -87.6708362},
     {name: "A Taste of Heaven", url: "https://www.gofundme.com/f/help-a-taste-of-heaven-servers", address: "5401 N Clark St, Chicago, IL 60640", latitude: 41.9799916, longitude: -87.6702083},
     {name: "The Bongo Room", url: "https://www.gofundme.com/f/bongo-room-employees-relief-fund", address: "5022 N Clark St, Chicago, IL 60640", latitude: 41.9731806, longitude: -87.6705684},
-    {name: "Hopleaf", url: "5022 N Clark St, Chicago, IL 60640", address: "5148 N Clark St, Chicago, IL 60640", latitude: 41.9758184, longitude: -87.6707483},
+    {name: "Hopleaf", url: "https://www.gofundme.com/f/hopleaf-staffers-fund", address: "5148 N Clark St, Chicago, IL 60640", latitude: 41.9758184, longitude: -87.6707483},
     {name: "La Colombe Coffee", url: "https://www.gofundme.com/f/la-colombe-andersonville-pandemic-relief", address: "5158 N Clark St, Chicago, IL 60640", latitude: 41.9760303, longitude: -87.670764},
     {name: "Little Bad Wolf", url: "https://www.gofundme.com/f/helping-support-little-bad-wolf", address: "1541 W Bryn Mawr Ave, Chicago, IL 60660", latitude: 41.9833527, longitude: -87.6712523}
 ]

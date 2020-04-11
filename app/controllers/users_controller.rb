@@ -1,5 +1,10 @@
 class UsersController < ApplicationController
 
+    def show
+        user = User.find_by(id: params[:id])
+        render json: {games: user.games, fundraisers: user.find_fundraisers_and_sort}
+    end
+
     def create
         user = User.create(user_params)
         if user.valid?
