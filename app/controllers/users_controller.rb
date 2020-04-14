@@ -2,7 +2,7 @@ class UsersController < ApplicationController
 
     def show
         user = User.find_by(id: params[:id])
-        render json: {games: user.games, fundraisers: user.find_fundraisers_and_sort}
+        render json: {user: UserSerializer.new(user), games: user.games, fundraisers: user.find_fundraisers_and_sort}
     end
 
     def create
