@@ -8,11 +8,12 @@ class UsersController < ApplicationController
     def create
         user = User.create(user_params)
         if user.valid?
+            #   Use JWT to save user login in the future
             token_payload = {user_id: user.id}
             token = encode_token(token_payload)
             
 
-            #   Square needs this data
+            #   Send necessary data to Square
             payload = {
                 "given_name": params[:user][:full_name],
                 "email_address": params[:user][:email],
