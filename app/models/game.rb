@@ -16,6 +16,8 @@ class Game < ApplicationRecord
       "idempotency_key": SecureRandom.uuid
     }
     
+    #   If the user is trying to pay with a saved card there is no nonce
+    #   Source ID will be a CreditCard instance id
     if !payload[:source_id]
       credit_card = CreditCard.find_by(id: payment_info["ccof"])
       payload[:source_id] = credit_card.square_ccof_id
@@ -35,13 +37,15 @@ class Game < ApplicationRecord
     }
     url = "https://connect.squareupsandbox.com/v2/customers/#{user[:square_id]}/cards"
     res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
-    # debugger
+    
+    #   If errors are returned send them to the frontend to be displayed
     if res.parse["errors"]
       return res.parse
     end
 
     CreditCard.create(last_four: res.parse["card"]["last_4"], square_ccof_id: res.parse["card"]["id"], card_brand: res.parse["card"]["card_brand"], user_id: user["id"])
 
+    #   Repackage info to be sent to method above
     payment_info = {
       nonce: res.parse["card"]["id"],
       token: params[:token],
@@ -55,6 +59,8 @@ class Game < ApplicationRecord
     donations_array = []
     total_fundraisers = Fundraiser.all.length
 
+    #   Max number of subdonations is either number of cents
+    #   donated, or the total number of fundraisers
     if self.amount * 100 > total_fundraisers
       max_donations = total_fundraisers
     else
@@ -62,6 +68,8 @@ class Game < ApplicationRecord
     end
 
     number_of_donations = rand(1..max_donations).to_i
+
+    #   Each fundraiser can't be chosen more than once
     recipient_fundraisers = (1..total_fundraisers).to_a.shuffle.take(number_of_donations)
     fundraiser_index = 0
 
@@ -70,6 +78,7 @@ class Game < ApplicationRecord
         fundraiser_index += 1
     end
 
+    #   Generate each subdonation amount so that all add up to total
     amount_array = (2..(self.amount * 100 + number_of_donations - 1)).to_a.shuffle.take(number_of_donations - 1)
     amount_array.sort!
 
@@ -89,6 +98,7 @@ class Game < ApplicationRecord
 
     end
 
+    #   Remove any donations that ended up as $0
     final_check = donations_array.filter do |donation_hash|
       donation_hash[:amount] != 0
     end

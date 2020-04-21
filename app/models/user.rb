@@ -7,6 +7,7 @@ class User < ApplicationRecord
     validates :username, uniqueness: { message: "%{value} has already been taken", case_sensitive: false }
     validates :email, uniqueness: { message: "An account already exists for %{value}", case_sensitive: false }
 
+    #   Find the aggregate total for each fundraiser for the user
     def find_fundraisers_and_sort
         fundraiser_donations = []
         self.fundraisers.uniq.each do |fundraiser|

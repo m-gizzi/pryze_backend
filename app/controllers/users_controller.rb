@@ -11,6 +11,8 @@ class UsersController < ApplicationController
             token_payload = {user_id: user.id}
             token = encode_token(token_payload)
             
+
+            #   Square needs this data
             payload = {
                 "given_name": params[:user][:full_name],
                 "email_address": params[:user][:email],
@@ -21,6 +23,7 @@ class UsersController < ApplicationController
             url = "https://connect.squareupsandbox.com/v2/customers"
             res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
             
+            #   If Square user has been created, add the Square ID to the user instance
             hash = JSON.parse(res.body.first)
             user.assign_attributes(square_id: hash["customer"]["id"])
             user.save
