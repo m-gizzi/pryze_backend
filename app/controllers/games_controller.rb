@@ -12,7 +12,7 @@ class GamesController < ApplicationController
         else
             result = Game.create_square_payment(params, user)
         end
-        
+        # debugger
         if result["payment"]
 
             game_attributes = {amount: (params[:amount].to_f / 100), user_id: user[:id], square_payment_id: result["payment"]["id"]}

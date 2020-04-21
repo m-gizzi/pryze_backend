@@ -35,6 +35,10 @@ class Game < ApplicationRecord
     }
     url = "https://connect.squareupsandbox.com/v2/customers/#{user[:square_id]}/cards"
     res = HTTP.auth("Bearer #{PryzeBackend::Application.credentials.sandbox_access_token}").post(url, :body => payload.to_json)
+    # debugger
+    if res.parse["errors"]
+      return res.parse
+    end
 
     CreditCard.create(last_four: res.parse["card"]["last_4"], square_ccof_id: res.parse["card"]["id"], card_brand: res.parse["card"]["card_brand"], user_id: user["id"])
 
