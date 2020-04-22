@@ -35,6 +35,15 @@ A number of fundraisers are currently included in the seeds file.  Add more by m
 * React Map GL
 * Square Payment Form
 
+### Server-Side Install Instructions
+1. Run ```bundle install```
+2. Run ```rake db:create```
+3. Run ```rake db:migrate```
+4. Run ```rake db:seed```
+5. Run ```rails s -p 3001```
+### Client-Side Install Instructions
+1. Run ```npm install```
+2. Run ```npm start```
 
 ### The App
 
